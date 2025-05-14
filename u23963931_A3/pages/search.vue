@@ -18,47 +18,50 @@
     </div>
 </template>
 
-<script>
-    export default {
-        data() {
-            return {
-                searchQuery: "",
-                posts: [
-                    {
-                        id: 1,
-                        title: "Post 1",
-                        author: "John Doe",
-                        content: "This is the full content for post 1, a sample blog post.",
-                        category: "Tech",
-                    },
-                    {
-                        id: 2,
-                        title: "Post 2",
-                        author: "Jane Smith",
-                        content: "This is the full content for post 2, another blog post.",
-                        category: "Lifestyle",
-                    },
-                    {
-                        id: 3,
-                        title: "Post 3",
-                        author: "John Doe",
-                        content: "This is the full content for post 3, yet another post.",
-                        category: "Tech",
-                    }
-                ],
-            };
-        },
-        computed: {
-            filteredPosts() {
-                const query = this.searchQuery.toLowerCase();
-                return this.posts.filter(
-                    (post) =>
-                    post.title.toLowerCase().includes(query) ||
-                    post.author.toLowerCase().includes(query)
-                );
+<script setup>
+    const searchQuery = ref('');
+
+    const { data: posts, error } = await useAsyncData('posts', async () => {
+        try {
+            const response = await $fetch(`http://localhost:1337/api/blog-posts`, {
+            params: {
+                'fields[0]': 'title',
+                'fields[1]': 'author',
+                'fields[2]': 'content',
+                'fields[3]': 'category',
             },
-        },
-    };
+            });
+            console.log('API Response:', JSON.stringify(response, null, 2));
+            if (!response.data || !Array.isArray(response.data)) {
+            throw new Error('Invalid response: data is not an array');
+            }
+            return response.data.map(post => {
+            return {
+                id: post.id,
+                documentId: post.documentId,
+                title: post.title,
+                author: post.author,
+                content: post.content?.[0]?.children?.[0]?.text,
+                category: post.category,
+            };
+            }).filter(post => post !== null);
+        } catch (err) {
+            console.error('Error fetching posts:', err);
+            return [];
+        }
+    }, 
+    {
+    key: 'posts',
+        default: () => [],
+    });
+
+    const filteredPosts = computed(() =>
+        posts.value.filter(
+            post =>
+            post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            post.author.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+    );
 </script>
 
 <style scoped>

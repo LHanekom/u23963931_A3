@@ -13,52 +13,42 @@
             <p>Post not found.</p>
             <nuxt-link to="/">Back to Home</nuxt-link>
         </div>
-        
     </div>
 </template>
 
-<script>
+<script setup>
     import { marked } from 'marked';
+    import { useRoute } from 'vue-router';
 
-    export default {
-        data() {
-            return {
-                post: null,
-            };
-        },
-        computed: {
-            renderedContent() {
-                return this.post ? marked(this.post.content) : '';
-            },
-        },
-        async created() {
-            const id = this.$route.params.id;
-            const posts = [
-                {
-                    id: '1',
-                    title: 'Post 1',
-                    author: 'John Doe',
-                    content: '# Post 1\nThis is the **full content** for post 1, a sample blog post.',
-                    category: 'Tech',
-                },
-                {
-                    id: '2',
-                    title: 'Post 2',
-                    author: 'Jane Smith',
-                    content: '# Post 2\nThis is the **full content** for post 2, another blog post.',
-                    category: 'Lifestyle',
-                },
-                {
-                    id: '3',
-                    title: 'Post 3',
-                    author: 'John Doe',
-                    content: '# Post 3\nThis is the **full content** for post 3, yet another post.',
-                    category: 'Tech',
-                },
-            ];
-            this.post = posts.find((post) => post.id === id) || null;
-        },
-    };
+    const route = useRoute();
+    const documentId = route.params.id;
+    console.log('Rendering post page for ID:', documentId);
+
+    const { data: post, error } = await useAsyncData(`post-${documentId}`, async () => {
+    try {
+        const response = await $fetch(`http://localhost:1337/api/blog-posts/${documentId}`);
+        console.log('Single Post API Response:', JSON.stringify(response, null, 2));
+        if (!response.data) {
+        throw new Error('Post not found in API response');
+        }
+        const postData = response.data;
+        return {
+        id: postData.id,
+        title: postData.title,
+        author: postData.author,
+        content: postData.content?.[0]?.children?.[0]?.text,
+        category: postData.category,
+        };
+    } catch (err) {
+        console.error('Error fetching post:', err);
+        throw new Error(`Failed to fetch post with ID ${documentId}: ${err.message}`);
+    }
+    }, {
+    key: `post-${documentId}`,
+    default: () => null,
+    });
+
+    const renderedContent = computed(() => (post.value ? marked(post.value.content) : ''));
 </script>
 
 <style scoped>

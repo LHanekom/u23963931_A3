@@ -14,47 +14,49 @@
     </div>
 </template>
 
-<script>
-    export default {
-        data() {
-            return {
-                selectedCategory: "",
-                posts: [
-                    {
-                        id: 1,
-                        title: "Post 1",
-                        author: "John Doe",
-                        content: "This is the full content for post 1, a sample blog post.",
-                        category: "Tech",
-                    },
-                    {
-                        id: 2,
-                        title: "Post 2",
-                        author: "Jane Smith",
-                        content: "This is the full content for post 2, another blog post.",
-                        category: "Lifestyle",
-                    },
-                    {
-                        id: 3,
-                        title: "Post 3",
-                        author: "John Doe",
-                        content: "This is the full content for post 3, yet another post.",
-                        category: "Tech",
-                    }
-                ],
-            };
+<script setup>
+    const selectedCategory = ref('');
+
+    const { data: posts, error } = await useAsyncData('posts', async () => {
+    try {
+        const response = await $fetch(`http://localhost:1337/api/blog-posts`, {
+        params: {
+            'fields[0]': 'title',
+            'fields[1]': 'author',
+            'fields[2]': 'content',
+            'fields[3]': 'category',
         },
-        computed: {
-            categories() {
-            return [...new Set(this.posts.map((post) => post.category))];
-            },
-            filteredPosts() {
-            return this.selectedCategory
-                ? this.posts.filter((post) => post.category === this.selectedCategory)
-                : this.posts;
-            },
-        },
-    };
+        });
+        console.log('API Response:', JSON.stringify(response, null, 2));
+        if (!response.data || !Array.isArray(response.data)) {
+        throw new Error('Invalid response: data is not an array');
+        }
+        return response.data.map(post => {
+        return {
+            id: post.id,
+            documentId: post.documentId,
+            title: post.title,
+            author: post.author,
+            content: post.content?.[0]?.children?.[0]?.text,
+            category: post.category,
+        };
+        }).filter(post => post !== null);
+    } catch (err) {
+        console.error('Error fetching posts:', err);
+        return [];
+    }
+    }, {
+    key: 'posts',
+    default: () => [],
+    });
+
+    const categories = computed(() => [...new Set(posts.value.map(post => post.category))]);
+
+    const filteredPosts = computed(() =>
+    selectedCategory.value
+        ? posts.value.filter(post => post.category === selectedCategory.value)
+        : posts.value
+    );
 </script>
 
 <style scoped>

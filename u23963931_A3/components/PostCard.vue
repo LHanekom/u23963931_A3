@@ -5,7 +5,7 @@
         <h2>{{ post.title }}</h2>
         <p><strong>Author:</strong> {{ post.author }}</p>
         <p>{{ post.content.substring(0, 100) }}...</p>
-        <nuxt-link :to="`/posts/${post.id}`">Read more</nuxt-link>
+        <nuxt-link :to="`/posts/${post.documentId}`">Read more</nuxt-link>
     </div>
 </template>
 

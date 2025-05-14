@@ -20,10 +20,11 @@
 
 <script setup>
     const searchQuery = ref('');
+    const config = useRuntimeConfig();
 
     const { data: posts, error } = await useAsyncData('posts', async () => {
         try {
-            const response = await $fetch(`http://localhost:1337/api/blog-posts`, {
+            const response = await $fetch(`${config.public.strapiUrl}/api/blog-posts`, {
             params: {
                 'fields[0]': 'title',
                 'fields[1]': 'author',

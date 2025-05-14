@@ -3,19 +3,17 @@
         <h2>{{ post.title }}</h2>
         <p><strong>Author:</strong> {{ post.author }}</p>
         <p>{{ post.content.substring(0, 100) }}...</p>
-        <nuxt-link :to="`/post?documentId=${post.documentId}`">Read more</nuxt-link>
+        <NuxtLink :to="{ path: '/post', query: { documentId: post.documentId } }">Read More</NuxtLink>
     </div>
 </template>
 
-<script>
-    export default {
-        props: {
-            post: {
+<script setup>
+    defineProps({
+        post: {
             type: Object,
             required: true,
-            },
         },
-    };
+    });
 </script>
 
 <style scoped>

@@ -20,18 +20,24 @@
 </template>
 <script setup>
     import { marked } from 'marked';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRuntimeConfig, useAsyncData} from '#app';
+    import { ref } from 'vue';
 
     const route = useRoute();
-    const documentId = route.query.documentId; // Get documentId from query parameter
+    const config = useRuntimeConfig();
+    const documentId = ref(route.query.documentId);
     console.log('Rendering post page for documentId:', documentId);
 
-    const { data: post, error } = await useAsyncData(`post-${documentId}`, async () => {
+    watch(() => route.query.documentId, (newDocumentId) => {
+        documentId.value = newDocumentId;
+    });
+
+    const { data: post, error } = await useAsyncData(`post-${documentId.value}`, async () => {
         try {
-            if (!documentId) {
+            if (!documentId.value) {
                 throw new Error('No documentId provided in query');
             }
-            const response = await $fetch(`http://localhost:1337/api/blog-posts/${documentId}`);
+            const response = await $fetch(`${config.public.strapiUrl}/api/blog-posts/${documentId.value}`);
             console.log('Single Post API Response:', JSON.stringify(response, null, 2));
             if (!response.data) {
                 throw new Error('Post not found in API response');
@@ -40,18 +46,18 @@
             return {
                 id: postData.id,
                 documentId: postData.documentId,
-                title: postData.title || 'Untitled',
-                author: postData.author || 'Unknown',
-                content: postData.content?.[0]?.children?.[0]?.text || '',
-                category: postData.category || 'Uncategorized',
+                title: postData.title,
+                author: postData.author,
+                content: postData.content?.[0]?.children?.[0]?.text,
+                category: postData.category,
             };
         } catch (err) {
             console.error('Error fetching post:', err);
-            throw new Error(`Failed to fetch post with documentId ${documentId}: ${err.message}`);
+            throw new Error(`Failed to fetch post with documentId ${documentId.value}: ${err.message}`);
         }
     }, 
     {
-        key: `post-${documentId}`,
+        key: `post-${documentId.value}`,
         default: () => null,
     });
 

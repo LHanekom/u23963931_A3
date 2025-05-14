@@ -2,7 +2,7 @@
 
 <template>
     <div class="container">
-        <h1>Search Posts</h1>
+        <h1>Search</h1>
         <input 
             v-model="searchQuery" 
             placeholder="Search by title or author..."
@@ -65,20 +65,46 @@
 </script>
 
 <style scoped>
-    .container { 
-        max-width: 800px; 
-        margin: 0 auto; 
-        padding: 20px; 
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #F5F5F5;
     }
 
-    input { 
-        width: 100%; 
-        padding: 10px; 
-        margin-bottom: 20px; 
+    .container h1 {
+        font-size: 2rem;
+        color: #333333;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    .posts { 
-        display: grid; 
-        gap: 20px; 
+    input {
+        width: 28%;
+        padding: 0.8rem 1rem;
+        margin: 0 auto;
+        margin-bottom: 1.5rem;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #2F4F4F;
+        box-shadow: 0 0 0 3px rgba(47, 79, 79, 0.1);
+    }
+
+    input::placeholder {
+        color: #999999;
+    }
+
+    .posts {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
     }
 </style>

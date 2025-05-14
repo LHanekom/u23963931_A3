@@ -16,36 +16,42 @@
 
 <style scoped>
   header {
-    background-color: #f4f4f4;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
+    background-color: #FFFFFF;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #E0E0E0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
-  nav ul {
-    list-style: none;
-    padding: 0;
+  nav {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    gap: 20px;
+    gap: 2rem;
   }
 
-  nav ul li {
-    display: inline;
-  }
-
-  nav ul li a {
+  nav a {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     text-decoration: none;
-    color: #333;
-    font-weight: bold;
+    color: #2F4F4F;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  nav ul li a:hover {
-    color: #007bff;
+  nav a.router-link-active,
+  nav a:hover {
+    background-color: #2F4F4F;
+    color: #FFFFFF;
   }
 
   main {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 2rem;
+    background-color: #F5F5F5;
   }
-  
 </style>

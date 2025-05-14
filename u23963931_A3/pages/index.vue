@@ -63,10 +63,21 @@
     .container {
         max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 2rem;
+        background-color: #F5F5F5;
     }
+
+    .container h1 {
+        font-size: 2rem;
+        color: #333333;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
     .posts {
         display: grid;
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
     }
 </style>
